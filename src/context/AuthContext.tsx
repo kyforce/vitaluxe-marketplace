@@ -32,38 +32,58 @@ const ADMIN_PASSWORD = 'admin123';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('vitaNatureUser');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const savedUser = localStorage.getItem('vitaNatureUser');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur:", error);
+      return null;
+    }
   });
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('vitaNatureUser', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('vitaNatureUser');
+    try {
+      if (user) {
+        localStorage.setItem('vitaNatureUser', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('vitaNatureUser');
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde de l'utilisateur:", error);
     }
   }, [user]);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simuler un délai d'authentification
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      const newUser = { username, isAdmin: true };
-      setUser(newUser);
-      localStorage.setItem('vitaNatureUser', JSON.stringify(newUser));
-      toast.success('Connecté en tant qu\'administrateur');
-      return true;
-    } else {
-      toast.error('Nom d\'utilisateur ou mot de passe incorrect');
+    try {
+      // Simuler un délai d'authentification
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        const newUser = { username, isAdmin: true };
+        setUser(newUser);
+        localStorage.setItem('vitaNatureUser', JSON.stringify(newUser));
+        toast.success('Connecté en tant qu\'administrateur');
+        return true;
+      } else {
+        toast.error('Nom d\'utilisateur ou mot de passe incorrect');
+        return false;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+      toast.error('Une erreur est survenue lors de la connexion');
       return false;
     }
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('vitaNatureUser');
-    toast.success('Déconnecté avec succès');
+    try {
+      setUser(null);
+      localStorage.removeItem('vitaNatureUser');
+      toast.success('Déconnecté avec succès');
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      toast.error('Une erreur est survenue lors de la déconnexion');
+    }
   };
 
   return (
