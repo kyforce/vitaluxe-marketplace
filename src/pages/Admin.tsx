@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Edit, Save, X, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import products, { Product } from '@/data/products';
 
 const Admin = () => {
   const { isAuthenticated, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [productPrices, setProductPrices] = useState<{ [key: number]: number }>({});
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newPrice, setNewPrice] = useState<string>('');
@@ -21,7 +22,14 @@ const Admin = () => {
     setProductPrices(prices);
   }, []);
   
-  // Redirect if user is not authenticated or not admin
+  useEffect(() => {
+    // Si l'utilisateur n'est pas authentifié ou n'est pas administrateur, rediriger vers la page de connexion
+    if (!isAuthenticated || !isAdmin) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, isAdmin, navigate]);
+  
+  // Protection additionnelle: si l'utilisateur n'est pas authentifié ou n'est pas administrateur, rediriger immédiatement
   if (!isAuthenticated || !isAdmin) {
     return <Navigate to="/login" />;
   }

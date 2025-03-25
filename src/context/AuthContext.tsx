@@ -49,7 +49,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await new Promise(resolve => setTimeout(resolve, 500));
     
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      setUser({ username, isAdmin: true });
+      const newUser = { username, isAdmin: true };
+      setUser(newUser);
+      localStorage.setItem('vitaNatureUser', JSON.stringify(newUser));
       toast.success('Connecté en tant qu\'administrateur');
       return true;
     } else {
@@ -60,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('vitaNatureUser');
     toast.success('Déconnecté avec succès');
   };
 

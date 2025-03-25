@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,8 +11,15 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
+  // Si déjà connecté, rediriger vers la page admin
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin');
+    }
+  }, [isAuthenticated, navigate]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +39,7 @@ const Login = () => {
       }
     } catch (err) {
       setError('Une erreur est survenue lors de la connexion');
+      console.error('Erreur de connexion:', err);
     } finally {
       setIsLoading(false);
     }
@@ -49,9 +58,9 @@ const Login = () => {
             </div>
             
             {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-md mb-6 text-sm">
-                {error}
-              </div>
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
             
             <form onSubmit={handleSubmit} className="space-y-6">
