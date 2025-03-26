@@ -20,6 +20,11 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Ajout de la base URL pour les déploiements
+  // Configuration pour Netlify
   base: "/",
+  build: {
+    outDir: "dist",
+    sourcemap: false,
+    minify: true,
+  }
 }));
