@@ -4,7 +4,7 @@
   publish = "dist"
 
 [context.production]
-  base = "main"
+  base = "master"
 
 [[redirects]]
   from = "/*"
